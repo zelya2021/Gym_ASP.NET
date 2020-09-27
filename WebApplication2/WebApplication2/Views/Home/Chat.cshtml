@@ -1,0 +1,151 @@
+﻿
+
+@{
+    ViewBag.Title = "Chat";
+}
+<style>
+    .chat {
+        width: 35%;
+        border: 1px solid rgba(0,0,0,.1);
+        border-radius: 5px;
+        height: 450px;
+    }
+
+    #messages {
+        height: 415px;
+        box-sizing: border-box;
+        padding: 10px 15px;
+        min-height: 350px;
+    }
+
+    .message {
+        width: 70%;
+        border: 1px solid rgba(0,0,0,.1);
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 0 15px rgba(0,0,0,.1);
+        margin: 10px 0;
+    }
+
+    .message-right {
+        margin-left: auto;
+    }
+</style>
+
+<div class="chat">
+    <div id="messages"></div>
+    <div class="row">
+        <div class="col-lg-12 col-md-12">
+            <div class="input-group">
+                <input type="text" id="message" class="form-control" placeholder="Your message..">
+                <span class="input-group-btn">
+                    <button id="btn-send-message" class="btn btn-default" type="button">Send message</button>
+                </span>
+            </div><!-- /input-group -->
+        </div><!-- /.col-lg-6 -->
+    </div>
+</div>
+
+
+@section scripts {
+    <script src="~/Scripts/jquery.signalR-2.2.2.min.js"></script>
+    <script src="~/signalr/hubs"></script>
+    <script>
+        $(document).ready(() => {
+            console.log('ready');
+
+            //описание пользователя
+            let user = {
+                nickname: '',
+                connectionId: ''
+            };
+            //список подключенных пользователей
+            let allUsers = [];
+
+            //получение ссылки на Chat Hub
+            var connection = $.connection.chat;
+
+            // -= Подписка на события, которые будут вызываться на сервере =-
+            //получение сообщения
+            connection.client.sendMessage = (id, message) => {
+                console.log('Получено сообщение');
+                console.log(id);
+                console.log(message);
+
+                //наше сообщение
+                if (id === user.connectionId) {
+                    $('#messages').append(`<div class="message alert-success message-right">
+                                            <h4>Я</h4>
+                                            <p>${message}</p>
+                                        </div>`);
+                }
+                else {  //от другого пользователя
+                    let findUser = allUsers.find((user) => { return user.connectionId === id; });
+                    //console.log(findUser);
+
+                    if (findUser !== undefined) {
+                        $('#messages').append(`<div class="message alert-info">
+                                            <h4>${findUser.nickname}</h4>
+                                            <p>${message}</p>
+                                        </div>`);
+                    }
+                }
+            };
+
+            //уведомление о подключении
+            connection.client.onUserConnected = (id, nickname, users) => {
+                console.log('Подключен');
+                console.log(id);
+                console.log(nickname);
+                console.log(users);
+
+                user.nickname = nickname;
+                user.connectionId = id;
+                allUsers = users;
+            };
+
+            //уведомление о подключении нового пользователя
+            connection.client.onNewUserConnected = (id, nickname) => {
+                console.log('Подключен новый пользователь');
+                console.log(id);
+                console.log(nickname);
+                allUsers.push({
+                    connectionId: id,
+                    nickname: nickname
+                })
+            };
+
+            //уведомлении об отключении пользователя
+            connection.client.onUserDisconnected = (id) => {
+                console.log('Пользователь отключен');
+                console.log(id);
+            };
+
+            //подключение к серверу
+            $.connection.hub.start().done(() => {
+                console.log('Подключение установлено');
+
+                //запрос имени пользователя
+                let name = prompt('Введите свои имя', 'Vasya');
+
+                //вызов метода 'подключения' на стороне сервера
+                connection.server.onConnected(name);
+
+                //клик по кнопке отправить сообщение
+                $('#btn-send-message').click(() => {
+                    //получение текста сообщения
+                    let msg = $('#message').val();
+                    //очистка поля
+                    $('#message').val('');
+
+                    //сообщение не пустое
+                    if (msg !== '') {
+                        //вызов метода 'отправки сообщения' на стороне сервера
+                        connection.server.sendMessage(user.connectionId, msg);
+                    }
+                });
+
+            });
+        });
+    </script>
+}

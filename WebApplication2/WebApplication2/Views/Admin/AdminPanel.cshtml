@@ -1,0 +1,31 @@
+﻿@using WebApplication2.Models
+@model List<Trainer>
+@{
+    ViewBag.Title = "AdminPanel";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+
+<ul>
+    @foreach (var client in Model)
+    {
+        <li>@client.Fio @client.Login</li>
+    }
+</ul>
+
+@*foreach (var client in Model)
+    {
+        @*<div class="card" style="width: 200px; display: flex; flex-wrap: wrap; height: 100px;">
+<div class="card" style="width: 200px">
+    @*<img width="200px" src=@abonent.Image class="card-img-top" alt="...">
+    <div class="card-body">
+        <h5 style="text-align: center;" class="card-title">@client.Fio</h5>
+        <p style="text-align: center;" class="card-text">@client.DateOfBirth</p>
+        <p style="text-align: center;" class="card-text">@client.PhoneNumber</p>
+        <p style="text-align: center;" class="card-text">@client.Status</p>
+        <p style="text-align: center;" class="card-text">@client.Login</p>
+    </div>
+    @Html.ActionLink("View", "Detail", new { id = client.Id })|
+    @Html.ActionLink("Delete", "Delete", new { id = client.Id })|
+    @Html.ActionLink("Edit", "Edit", new { id = client.Id })|
+</div>
+} *@

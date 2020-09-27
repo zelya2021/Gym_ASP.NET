@@ -1,0 +1,64 @@
+﻿@using WebApplication2.Models
+@model List<IndividualTraining>
+@Styles.Render("~/Content/css")
+@{
+    ViewBag.Title = "TrainerPanel";
+    var trainer = ViewData["trainer"] as Trainer;
+}
+<div>
+    <table class="card">
+        <caption style="font-size:40px; text-align: center">Ваши данные</caption>
+        <tr>
+            <td>ФИО: </td>
+            <td> @trainer.Fio</td>
+        </tr>
+        <tr>
+            <td>Дата Рождения: </td>
+            <td> @trainer.DateOfBirth</td>
+        </tr>
+        <tr>
+            <td>Номер телефона: </td>
+            <td> @trainer.PhoneNumber</td>
+        </tr>
+        <tr>
+            <td>Статус: </td>
+            <td> @trainer.Status</td>
+        </tr>
+        <tr>
+            <td>Специализация: </td>
+            <td> @trainer.Specialization</td>
+        </tr>
+    </table>
+</div>
+
+<!--<div class="carousel"></div>-->
+<table class="card2">
+    <caption style="font-size:30px; text-align: center">Индивидуальные тренировки</caption>
+    <tr>
+        <th> День</th>
+        <th> Время</th>
+        <th> Редактировать</th>
+        <th> Удалить</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+<tr>
+
+    <td>@item.Day.Day/@item.Day.Month/@item.Day.Year</td>
+    <td>@item.Time</td>
+    <td>@item.Trainer.Fio</td>
+    <td><a>@Html.ActionLink("Edit", "EditIndivTr", new { id = item.Id })</a></td>
+    <td><a>@Html.ActionLink("Delete", "Delete", new { id = item.Id })</a></td>
+    <td><a>@Html.ActionLink("View", "DetailIndividTraining", new { id = item.Id })</a></td>
+
+</tr>
+    }
+</table>
+<div>
+    @Html.ActionLink("Add", "AddIndividTraining", "Trainer")
+</div>
+<div>
+    @Html.ActionLink("Go to chat", "Chat", "Trainer")
+</div>
+
+

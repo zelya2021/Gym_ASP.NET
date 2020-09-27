@@ -1,0 +1,13 @@
+﻿@using WebApplication2.Models
+@{
+    ViewBag.Title = "ClientPannel";
+    var client = ViewData["client"] as Client;
+}
+
+<h2>ClientPannel</h2>
+
+<ul>
+    <li>@client.Fio</li>
+    <li>@client.DateOfBirth</li>
+    <li>@client.PhoneNumber</li>=
+</ul>
